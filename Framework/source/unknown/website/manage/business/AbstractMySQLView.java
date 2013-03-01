@@ -2,13 +2,13 @@ package unknown.website.manage.business;
 
 import unknown.framework.business.database.AbstractView;
 import unknown.framework.module.database.Instance;
-import unknown.framework.module.pojo.ViewPojo;
 import unknown.website.MySQL;
+import unknown.website.manage.module.AbstractManageView;
 
 /**
  * 管理模块视图
  */
-public abstract class AbstractMySQLView extends AbstractView<ViewPojo> {
+public abstract class AbstractMySQLView<T extends AbstractManageView> extends AbstractView<T> {
 	@Override
 	public Instance getInstance() {
 		return MySQL.getManageInstance();
