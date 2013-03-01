@@ -196,7 +196,7 @@ public abstract class AbstractDatabase {
 				fields.add(field);
 			}
 
-			do {
+			while (resultSet.next()) {
 				Row row = new Row();
 				List<Object> values = new ArrayList<Object>();
 
@@ -209,7 +209,7 @@ public abstract class AbstractDatabase {
 
 				row.setValues(values);
 				rows.add(row);
-			} while (resultSet.next());
+			}
 
 			resultSet.close();
 
@@ -217,8 +217,10 @@ public abstract class AbstractDatabase {
 			table.setFields(fields);
 			table.setRows(rows);
 
+			result.setDone(true);
 			result.setTable(table);
 		} catch (SQLException e) {
+			result.setDone(false);
 			Trace.logger().error(e);
 		}
 
@@ -240,7 +242,6 @@ public abstract class AbstractDatabase {
 			Paging paging, String rowCountSql) {
 		Result result = new Result();
 
-		result.setDone(true);
 		try {
 			// 查询数据
 			List<String> fields = new ArrayList<String>();
@@ -287,8 +288,6 @@ public abstract class AbstractDatabase {
 			Table table = new Table();
 			table.setFields(fields);
 			table.setRows(rows);
-
-			result.setTable(table);
 			// 计算总行数
 			int rowCount = 0;
 			resultSet = preparedStatement.executeQuery(rowCountSql);
@@ -297,8 +296,12 @@ public abstract class AbstractDatabase {
 			}
 			resultSet.close();
 			paging.setRowCount(rowCount);
+			
+			result.setDone(true);
+			result.setTable(table);
 			result.setPaging(paging);
 		} catch (SQLException e) {
+			result.setDone(false);
 			Trace.logger().error(e);
 		}
 
@@ -315,10 +318,11 @@ public abstract class AbstractDatabase {
 	protected Result executeUpdate(PreparedStatement preparedStatement) {
 		Result result = new Result();
 
-		result.setDone(true);
 		try {
 			preparedStatement.executeUpdate();
+			result.setDone(true);
 		} catch (SQLException e) {
+			result.setDone(false);
 			Trace.logger().error(e);
 		}
 
